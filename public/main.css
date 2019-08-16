@@ -1,0 +1,33 @@
+body{
+    margin: 0;
+}
+
+
+.navigation {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  
+  background: deepskyblue;
+  
+  display: flex;
+  
+  justify-content: flex-start;
+}
+
+.navigation a {
+  text-decoration: none;
+  font-size: 20;
+  display: block;
+  padding: 1em;
+  color: white;
+}
+
+.navigation a:hover {
+  background: dodgerblue;
+}
+
+.main {
+    margin: 10px;
+}
+
