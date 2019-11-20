@@ -5,7 +5,10 @@ const fs = require("fs");
 
 const app = express();
 
-let fileData = require('./data/data.js');
+let fileData = {
+  fileName: "",
+  data: []
+};
 
 const port = 3000;
 
