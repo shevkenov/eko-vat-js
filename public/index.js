@@ -1,54 +1,47 @@
- const fileUploadForm = document.getElementById("fileUpload");
-// fileUploadForm.addEventListener("submit", function(event) {
-//   const formData = new FormData();
+const browseInput = document.querySelector(".inputUploadFile");
+const progressInfo = document.querySelector(".progressInfo");
+const downloadFile = document.querySelector(".downloadFile");
+const progressBar = document.querySelector(".progressBar");
 
-//   const fileField = document.querySelector('input[type="file"]');
-//   formData.append("avatar", fileField.files[0]);
-
-//   uploadFile("/upload",fileField);
-
-//   event.preventDefault();
-//   event.stopPropagation();
-// });
-
-// async function uploadFile(url, file) {
-//   const response = await fetch(url, {
-//     method: "POST",
-//     body: file
-//   });
-//   const utf8Decoder = new TextDecoder("utf-8");
-//   const reader = response.body.getReader();
-
-//   let { value: chunk, done: readerDone } = await reader.read();
-//   chunk = chunk ? utf8Decoder.decode(chunk) : "";
-//   console.log(chunk);
-// }
-
-const sendFile = file => {
-  const uri = "/saveImage";
-  const xhr = new XMLHttpRequest();
-  const fd = new FormData();
-
-  xhr.open("POST", uri, true);
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-      const imageName = xhr.responseText;
-      //do what you want with the image name returned
-      //e.g update the interface
-    }
-  };
-  fd.append("myFile", file);
-  xhr.send(fd);
-};
-
-const handleImageUpload = event => {
-  const files = event.target.files;
-  sendFile(files[0]);
-};
-
-fileUploadForm.addEventListener("change", event => {
-  handleImageUpload(event);
+browseInput.addEventListener('change', event => {
   
-  event.preventDefault();
-  event.stopPropagation();
-});
+  const files = event.target.files[0];
+  const formData = new FormData();
+  formData.append("fileToUpload", files);
+
+  const ajax = new XMLHttpRequest();
+  ajax.upload.addEventListener("progress", progressHandler, false);
+  ajax.addEventListener("load", ajaxComplete, false);
+  ajax.addEventListener("abort", ajaxAbortHandler, false);
+  ajax.addEventListener("error", ajaxErrorHandler, false);
+  
+  ajax.open("POST", "/upload");
+  ajax.send(formData);
+})
+
+downloadFile.addEventListener('click', event => {
+  downloadFile.setAttribute("style", "display: none");
+  progressInfo.textContent = '';
+  progressBar.setAttribute("style", `width: 0`);
+})
+
+function progressHandler(event){
+  var percent = (event.loaded / event.total) * 100;
+  percent = parseInt(percent);
+
+  progressBar.setAttribute("style", `width: ${percent}%`);
+  progressInfo.textContent = `${percent}% of data uploaded... please wait!`;
+}
+
+function ajaxComplete(){
+  progressInfo.textContent = "Upload Completed!";
+  downloadFile.setAttribute("style", "display: block");
+}
+
+function ajaxAbortHandler(){
+  progressInfo.textContent = "Upload aborted!"
+}
+
+function ajaxErrorHandler() {
+  progressInfo.textContent = "Upload failed!";
+}

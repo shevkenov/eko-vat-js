@@ -1,33 +1,69 @@
-body{
-    margin: 0;
-}
-
-
-.navigation {
-  list-style: none;
+body, html{
+  height: 100%;
   margin: 0;
   padding: 0;
-  
-  background: deepskyblue;
-  
-  display: flex;
-  
-  justify-content: flex-start;
+}
+
+*{
+  margin: 0;
+}
+
+#root{
+  height: 100%;
+}
+.navigation {
+  list-style: none;
 }
 
 .navigation a {
   text-decoration: none;
   font-size: 20;
   display: block;
-  padding: 1em;
   color: white;
 }
 
-.navigation a:hover {
-  background: dodgerblue;
+.header{
+  background: rgb(70, 106, 117);
+  padding: 1em;
 }
 
 .main {
-    margin: 10px;
+  width: 50%;
+  height: 100%;
+  margin: auto;
+  background: rgb(177, 230, 248);
+  padding: 1em;
 }
+
+.main form{
+  padding-top: 1em;
+}
+
+.main input{
+  background: palegoldenrod;
+}
+
+.progressBar{
+  margin-top: 1em;
+  height: 10px;
+  background: firebrick;
+  border-radius: 5px;
+  width: 0%;
+}
+
+.progressInfo{
+  margin-top: 2em;
+  font-weight: bold;
+}
+
+.inputUploadFile{
+  padding-right: 1em;
+}
+
+.downloadFile{
+  display: none;
+  margin-top: 1em;
+}
+
+
 

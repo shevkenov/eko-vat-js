@@ -1,48 +1,69 @@
 const express = require("express");
-//const fileUpload = require("express-fileupload");
+const formidable = require("formidable");
+const iconv = require("iconv-lite");
+const fs = require("fs");
+
 const app = express();
+
+let fileData = require('./data/data.js');
+
 const port = 3000;
 
 app.use(express.static("public"));
-//app.use(fileUpload());
 
 app.get("/", (req, res) => {
     res.sendFile("index.html");
 });
 
-// app.post("/upload", function(req, res) {
-//   if (!req.files) {
-//     return res.status(400).send("No files were uploaded.");
-//   }
-
-//   let myFile = req.files.myFile;
-
-//   myFile.mv("./upload/" + myFile.name, function(err) {
-//     if (err) return res.status(500).send(err);
-
-//     res.end();
-//   });
-// });
-
-const fs = require("fs");
-
-app.post("/saveImage", (req, res) => {
-  console.log(req);
+app.post("/upload", (req, res) => {
   
-  const fileName = req.files.myFile.name;
+  const form = new formidable.IncomingForm();
+  form.uploadDir = "upload";
+  form.keepExtensions = true;
   
-  fs.readFile(req.files.myFile.path, (err, data) => {
-    const newPath = __dirname + "/upload/" + fileName;
-    fs.writeFile(newPath, data, error => {
-      if (error) {
-        console.error(error);
-        res.end();
-      } else {
-        res.end(fileName);
-        //here you can save the file name to db, if needed
-      }
+  form.parse(req);
+  form.on("file", (name, file) => {
+    
+    const oldPath = file.path;
+    const newPath = form.uploadDir + "/" + file.name;
+    fileData.fileName = file.name;
+
+    fs.renameSync(oldPath, newPath);
+
+    const buffer = iconv.decode(fs.readFileSync(newPath), "win1251");
+    const stringBuffer = buffer.toString();
+    fileData.data = stringBuffer.split("\r\n").map(line => line.trim());
+
+    fs.unlink(newPath, error => {
+      if (error) throw error;
     });
+
+    res.write('OK');
+    res.end();
+
   });
 });
+
+app.get(
+  "/download",
+  (req, res) => {
+    const file = __dirname + "/" + fileData.fileName;
+    const stringData = iconv.encode(fileData.data.join("\r\n"), "win1251");
+
+    fs.writeFileSync(file, stringData, error => {
+      if (error) throw error;
+    });
+
+    res.download(file, error => {
+      if (error) {
+        throw error;
+      }
+
+      fs.unlink(file, err => {
+        if (err) throw err;
+      });
+    });   
+  }
+);  
 
 app.listen(port, () => console.log(`The server is listening on port ${port}!`));
